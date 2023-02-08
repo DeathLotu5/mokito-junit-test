@@ -8,10 +8,12 @@ import java.util.UUID;
 
 public class UserServiceImpl implements UserService {
 
-    UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final EmailVerificationSerive emailVerificationSerive;
 
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository, EmailVerificationSerive emailVerificationSerive) {
         this.userRepository = userRepository;
+        this.emailVerificationSerive = emailVerificationSerive;
     }
 
     @Override
@@ -21,8 +23,19 @@ public class UserServiceImpl implements UserService {
         }
 
         User user = new User(firstName, lastName, email, password, repeatPassword, UUID.randomUUID().toString());
-        boolean isUserCreated = userRepository.save(user);
+        boolean isUserCreated;
+        try {
+            isUserCreated = userRepository.save(user);
+        } catch (RuntimeException ex) {
+            throw new UserServiceException(ex.getMessage());
+        }
         if (!isUserCreated) throw new UserServiceException("Could not create user");
+
+        try {
+            emailVerificationSerive.scheduleEmailConfirmation(user);
+        } catch (RuntimeException ex) {
+            throw new EmailVerificationException(ex.getMessage());
+        }
 
         return user;
     }
