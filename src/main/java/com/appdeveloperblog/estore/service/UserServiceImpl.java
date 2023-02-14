@@ -36,7 +36,10 @@ public class UserServiceImpl implements UserService {
         } catch (RuntimeException ex) {
             throw new EmailVerificationException(ex.getMessage());
         }
-
         return user;
+    }
+
+    public void test() {
+        System.out.println("Demo method");
     }
 }
