@@ -7,6 +7,7 @@ public class EmailVerificationSeriveImpl implements EmailVerificationSerive {
     @Override
     public void scheduleEmailConfirmation(User user) {
         // Put user details into email queue
+        System.out.println("asdasdasd");
         System.out.println("Put user details into email queue");
     }
 }
